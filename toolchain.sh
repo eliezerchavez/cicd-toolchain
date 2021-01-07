@@ -13,9 +13,9 @@ export USER__ID=$(id -u)
 # displays usage message in standard output.
 #
 usage() {
-    echo "usage: $0 {init|up|down} [options]"
-    echo "$0 options:"
-    echo "  --help          this usage message"
+    echo "usage: toolchain.sh { clean | down | init | up | start | stop } [options]"
+    echo "toolchain.sh options:"
+    echo "  --help              this usage message"
     exit 1
 }
 
@@ -73,7 +73,7 @@ doInit() {
 until [ -z "$1" ] #until all parameters used up...
 do
     case "$1" in
-        "clean"|"down"|"init"|"up")
+        "clean"|"down"|"init"|"up"|"start"|"stop")
             command="$1"
             ;;
         *|"--help")
@@ -109,5 +109,11 @@ case "$command" in
         docker-compose up -d
         docker exec -itu root jenkins bash -c "getent group docker || groupadd docker && usermod -aG docker jenkins && chgrp docker /var/run/docker.sock"
         docker-compose restart jenkins
+        ;;
+    "start")
+        docker-compose start
+        ;;
+    "stop")
+        docker-compose stop
         ;;
 esac
