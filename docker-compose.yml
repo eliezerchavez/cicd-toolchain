@@ -9,6 +9,7 @@ services:
       context: './jenkins'
     container_name: 'jenkins'
     environment:
+      CASC_JENKINS_CONFIG: '/usr/share/jenkins/ref/casc_configs'
       JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
       JENKINS_OPTS: '--prefix=/jenkins'
     image: 'eliezerchavez/jenkins'
@@ -19,6 +20,7 @@ services:
       - 50000:50000
     volumes:
       - './storage/jenkins/home:/var/jenkins_home'
+      - './jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml'
       - '/var/run/docker.sock:/var/run/docker.sock'
   nexus:
     container_name: nexus
@@ -46,7 +48,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - './storage/nginx/conf:/etc/nginx/conf.d'
+      - './storage/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf'
   postgres:
     container_name: postgres
     environment:

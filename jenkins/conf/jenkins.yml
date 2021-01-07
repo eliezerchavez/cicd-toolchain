@@ -1,0 +1,50 @@
+---
+jenkins:
+  systemMessage: 'Jenkins configured using CasC.'
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: 'admin'
+            description: 'Jenkins administrators'
+            permissions:
+              - 'Overall/Administer'
+            assignments:
+              - 'admin'
+          - name: 'readonly'
+            description: 'Read-only users'
+            permissions:
+              - 'Overall/Read'
+              - 'Job/Read'
+            assignments:
+              - 'authenticated'
+  clouds:
+    - docker:
+        dockerApi:
+          dockerHost:
+            uri: 'unix:/var/run/docker.sock'
+        name: 'docker'
+        templates:
+          - labelString: 'docker-agent'
+            name: 'agent'
+            dockerTemplateBase:
+              image: 'jenkins/agent:latest-jdk11'
+            pullStrategy: PULL_LATEST
+            remoteFs: '/home/jenkins/agent'
+            connector: 
+              attach:
+                user: 'jenkins'
+            instanceCapStr: '10'
+            retentionStrategy:
+              idleMinutes: 3
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: 'admin'
+          password: 'admin'
+unclassified:
+  location:
+    url: 'http://localhost/jenkins'
+  shell:
+    shell: '/bin/bash'
