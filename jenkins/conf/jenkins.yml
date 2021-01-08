@@ -34,9 +34,18 @@ jenkins:
             connector: 
               attach:
                 user: 'jenkins'
+                entryPointCmd: |
+                               ^${JAVA_EXE}
+                               ^${JVM_ARGS}
+                               -jar
+                               ^${FS_DIR}/^${JAR_NAME}
+                               -noReconnect
+                               -noKeepAlive
+                               -agentLog
+                               ^${FS_DIR}/agent.log
             instanceCapStr: '10'
             retentionStrategy:
-              idleMinutes: 3
+              idleMinutes: 2
   securityRealm:
     local:
       allowsSignup: false
