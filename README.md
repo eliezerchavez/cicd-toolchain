@@ -17,7 +17,7 @@ This tools fit into one or more activities, which supports specific DevOps initi
   * a host for internal artifacts providing an organization with a deployment target for software artifacts. An automatic code review tool to detect bugs, vulnerabilities, and code smells in your code.
 
 ## Author 🖋️
-* **Eliezer Efrain Chavez** -  [eec](www.linkedin.com/in/eliezerchavez)
+* **Eliezer Efrain Chavez** -  [eliezerchavez](https://www.linkedin.com/in/eliezerchavez)
 
 ### Pre-Requisites 📋
 
