@@ -12,7 +12,7 @@ services:
       CASC_JENKINS_CONFIG: '/usr/share/jenkins/ref/casc_configs'
       JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
       JENKINS_OPTS: '--prefix=/jenkins'
-    image: 'eliezerchavez/jenkins'
+    image: 'toolchain/jenkins'
     networks:
       - 'tools'
     ports:
