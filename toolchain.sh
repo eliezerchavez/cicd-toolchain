@@ -102,12 +102,12 @@ case "$command" in
         doClean
         doInit
         docker-compose up --build -d
-        docker exec -itu root jenkins bash -c "getent group docker || groupadd docker && usermod -aG docker jenkins && chgrp docker /var/run/docker.sock"
+        docker exec -itu root jenkins bash -c "getent group docker || groupadd -rg $(getent group docker | cut -d':' -f3) docker && usermod -aG docker jenkins"
         docker-compose restart jenkins
         ;;
     "up")
         docker-compose up -d
-        docker exec -itu root jenkins bash -c "getent group docker || groupadd docker && usermod -aG docker jenkins && chgrp docker /var/run/docker.sock"
+        docker exec -itu root jenkins bash -c "getent group docker || groupadd -rg $(getent group docker | cut -d':' -f3) docker && usermod -aG docker jenkins"
         docker-compose restart jenkins
         ;;
     "start")
