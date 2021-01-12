@@ -51,9 +51,12 @@ toolchain.sh init
 ```
 
 After that you can access the tools via:
-* Jenkins - http://localhost/jenkins
-* SonarQube - http://localhost/sonarqube
-* Nexus - http://localhost/nexus
+
+Tool | URL
+---- | ---
+Jenkins | http://localhost/jenkins
+SonarQube | http://localhost/sonarqube
+Nexus | http://localhost/nexus
 
 ### Uninstall ❌
 
