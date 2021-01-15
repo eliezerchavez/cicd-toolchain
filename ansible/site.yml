@@ -76,7 +76,7 @@
       image: sonarqube:8-community
       name: sonarqube
       networks: 
-      - tools
+      - name: tools
       ports:
       - 9000:9000
       restart_policy: unless-stopped
@@ -91,4 +91,4 @@
       delay: 120
   vars:
     username: 'tools'
-    storage: '/home/{{ tools }}/cicd-toolchain/storage'
+    storage: '/home/{{ username }}/cicd-toolchain/storage'
