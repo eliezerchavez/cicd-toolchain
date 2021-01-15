@@ -8,6 +8,44 @@ export USER__ID=$(id -u)
 #
 
 #
+# Name: warning
+# Date: 2021-01-14
+# displays warning message in standard output.
+#
+warning() {
+    tries=1
+    maxTries=3
+
+    echo ""
+    echo " Stop & Delete CI/CD Toolchain"
+    echo " ------------------------------------------------------------"
+    echo ""
+    echo " Press Ctrl-c to abort."
+    echo ""
+    echo -e " \e[5mWARNING:"
+    echo -e " \e[0mAll the tools and its stored info will be destroyed!"
+    echo " Access to all jobs, projects, configuration and artifacts"
+    echo " repository will be lost unless a backup of the these has"
+    echo " been created."
+    echo ""
+    echo " Are you sure that you want to stop & delete the CI/CD"
+    echo " Toolchain?"
+    echo ""
+    echo -ne " Type DESTROY to confirm: "
+    read -r prompt
+    while [ ${prompt} != 'DESTROY' -a ${tries} -lt ${maxTries} ]; do
+        tries=$((tries+1))
+        echo -e '\e[2A'
+        echo -ne " Type DESTROY to confirm: \e[K"
+        read -r prompt
+    done
+
+    if [ ${tries} -eq ${maxTries} ]; then
+        exit 1
+    fi
+}
+
+#
 # Name: usage
 # Date: 2021-01-06
 # displays usage message in standard output.
@@ -92,6 +130,7 @@ fi
 
 case "$command" in
     "clean")
+        warning
         docker-compose down --remove-orphans
         doClean
         ;;
@@ -99,7 +138,6 @@ case "$command" in
         docker-compose down
         ;;
     "init")
-        doClean
         doInit
         docker-compose up --build -d
         docker exec -itu root jenkins bash -c "getent group docker || groupadd -rg $(getent group docker | cut -d':' -f3) docker && usermod -aG docker jenkins"
