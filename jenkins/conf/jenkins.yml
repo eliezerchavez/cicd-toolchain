@@ -5,53 +5,55 @@ jenkins:
     roleBased:
       roles:
         global:
-          - name: 'admin'
-            description: 'Jenkins administrators'
-            permissions:
-              - 'Overall/Administer'
-            assignments:
-              - 'admin'
-          - name: 'readonly'
-            description: 'Read-only users'
-            permissions:
-              - 'Overall/Read'
-              - 'Job/Read'
-            assignments:
-              - 'authenticated'
+        - name: 'admin'
+          description: 'Jenkins administrators'
+          permissions:
+          - 'Overall/Administer'
+          assignments:
+          - 'admin'
+        - name: 'readonly'
+          description: 'Read-only users'
+          permissions:
+          - 'Overall/Read'
+          - 'Job/Read'
+          assignments:
+          - 'authenticated'
   clouds:
-    - docker:
-        dockerApi:
-          dockerHost:
-            uri: 'unix:/var/run/docker.sock'
-        name: 'docker'
-        templates:
-          - labelString: 'docker-agent'
-            name: 'agent'
-            dockerTemplateBase:
-              image: 'jenkins/agent:latest-jdk11'
-            pullStrategy: PULL_LATEST
-            remoteFs: '/home/jenkins/agent'
-            connector: 
-              attach:
-                user: 'jenkins'
-                entryPointCmdString: |
-                               ^${JAVA_EXE}
-                               ^${JVM_ARGS}
-                               -jar
-                               ^${FS_DIR}/^${JAR_NAME}
-                               -noReconnect
-                               -noKeepAlive
-                               -agentLog
-                               ^${FS_DIR}/agent.log
-            instanceCapStr: '10'
-            retentionStrategy:
-              idleMinutes: 2
+  - docker:
+      dockerApi:
+        dockerHost:
+          uri: 'unix:/var/run/docker.sock'
+      name: 'docker'
+      templates:
+      - labelString: 'docker-agent'
+        name: 'agent'
+        dockerTemplateBase:
+          image: 'jenkins/agent:latest-jdk11'
+        volumes:
+        - '/var/run/docker.sock:/var/run/docker.sock'
+        pullStrategy: PULL_LATEST
+        remoteFs: '/home/jenkins/agent'
+        connector: 
+          attach:
+            user: 'jenkins'
+            entryPointCmdString: |-
+                            ^${JAVA_EXE}
+                            ^${JVM_ARGS}
+                            -jar
+                            ^${FS_DIR}/^${JAR_NAME}
+                            -noReconnect
+                            -noKeepAlive
+                            -agentLog
+                            ^${FS_DIR}/agent.log
+        instanceCapStr: '10'
+        retentionStrategy:
+          idleMinutes: 2
   securityRealm:
     local:
       allowsSignup: false
       users:
-        - id: 'admin'
-          password: 'admin'
+      - id: 'admin'
+        password: 'admin'
 unclassified:
   location:
     url: 'http://localhost/jenkins'
