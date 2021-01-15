@@ -1,23 +1,23 @@
 ---
 jenkins:
-  systemMessage: 'Jenkins configured using CasC.'
   authorizationStrategy:
     roleBased:
       roles:
         global:
-        - name: 'admin'
+        - assignments:
+          - 'admin'
           description: 'Jenkins administrators'
+          name: 'admin'
           permissions:
           - 'Overall/Administer'
-          assignments:
-          - 'admin'
-        - name: 'readonly'
+          
+        - assignments:
+          - 'authenticated'
           description: 'Read-only users'
+          name: 'readonly'
           permissions:
           - 'Overall/Read'
           - 'Job/Read'
-          assignments:
-          - 'authenticated'
   clouds:
   - docker:
       dockerApi:
@@ -25,17 +25,9 @@ jenkins:
           uri: 'unix:/var/run/docker.sock'
       name: 'docker'
       templates:
-      - labelString: 'docker-agent'
-        name: 'agent'
-        dockerTemplateBase:
-          image: 'jenkins/agent:latest-jdk11'
-        volumes:
-        - '/var/run/docker.sock:/var/run/docker.sock'
-        pullStrategy: PULL_LATEST
-        remoteFs: '/home/jenkins/agent'
-        connector: 
+      - connector: 
           attach:
-            user: 'jenkins'
+            user: 'root'
             entryPointCmdString: |-
                             ^${JAVA_EXE}
                             ^${JVM_ARGS}
@@ -45,15 +37,24 @@ jenkins:
                             -noKeepAlive
                             -agentLog
                             ^${FS_DIR}/agent.log
+        dockerTemplateBase:
+          image: 'jenkins/agent:latest-jdk11'
+          volumes:
+          - '/var/run/docker.sock:/var/run/docker.sock'
         instanceCapStr: '10'
+        labelString: 'docker-agent'
+        name: 'agent'
+        remoteFs: '/home/jenkins/agent'
         retentionStrategy:
           idleMinutes: 2
   securityRealm:
     local:
       allowsSignup: false
+      enableCaptcha: false
       users:
       - id: 'admin'
         password: 'admin'
+  systemMessage: 'Jenkins configured using CasC.'
 unclassified:
   location:
     url: 'http://localhost/jenkins'
