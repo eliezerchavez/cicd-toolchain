@@ -102,10 +102,11 @@
   - name: '[SonarQube] update admin password'
     uri:
       body: "login=admin&password=letmein&previousPassword=admin"
+      force_basic_auth: true
       method: POST
       status_code: 204
       password: admin
-      url: http://localhost:9000/sonarqube/api/users/change_password/
+      url: 'http://localhost:9000/sonarqube/api/users/change_password'
       user: admin
   - name: '[SonarQube] create Jenkins WebHook'
     uri:
@@ -113,7 +114,7 @@
       method: POST
       password: letmein
       status_code: 200
-      url: http://localhost:9000/sonarqube/api/webhooks/create
+      url: 'http://localhost:9000/sonarqube/api/webhooks/create'
       user: admin
   - name: '[SonarQube] create default Access Token'
     uri:
@@ -121,7 +122,7 @@
       method: POST
       password: letmein
       status_code: 200
-      url: http://localhost:9000/sonarqube/api/user_tokens/generate
+      url: 'http://localhost:9000/sonarqube/api/user_tokens/generate'
       user: admin
     register: sonarqube
   
