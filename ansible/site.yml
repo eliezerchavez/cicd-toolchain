@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  tasks:
+  - set_fact:
+      username: "{{ ansible_user_id }}"
+
+- hosts: localhost
+  become: true
+  tasks:
+  - name: "install pre-requisites"
+    apt:
+      pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      update_cache: true
+  - name: "add docker apt repository key"
+    apt_key:
+      url: "https://download.docker.com/linux/ubuntu/gpg"
+  - name: "add docker apt repository into sources list"
+    apt_repository:
+      repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+      update_cache: true
+  - name: "install docker"
+    apt:
+      pkg:
+      - containerd.io
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose
+      update_cache: true
+  - name: "start docker"
+    service:
+      enabled: true
+      name: "docker"
+      state: "restarted"
+  - name: "associate {{ username }} user to docker group"
+    user:
+      append: true
+      groups: docker
+      name: "{{ username }}"
