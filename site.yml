@@ -1,0 +1,211 @@
+---
+- hosts: localhost
+  tasks:
+  - name: 'install pre-requisites'
+    apt:
+      pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      update_cache: true
+  - name: 'add docker apt repository key'
+    apt_key:
+      url: 'https://download.docker.com/linux/ubuntu/gpg'
+  - name: 'add docker apt repository into sources list'
+    apt_repository:
+      repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+      update_cache: true
+  - name: 'install docker'
+    apt:
+      pkg:
+      - containerd.io
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose
+      update_cache: true
+  - name: 'start docker'
+    service:
+      enabled: true
+      name: 'docker'
+      state: 'restarted'
+  - name: 'associate {{ username }} user to docker group'
+    user:
+      append: true
+      groups: docker
+      name: '{{ username }}'
+
+  - name: 'create docker network'
+    docker_network:
+      name: tools
+
+  - name: '[PostgreSQL] create volume paths'
+    file:
+      path: '{{ storage }}/postgres/data'
+      state: directory
+  - name: '[PostgreSQL] start container'
+    docker_container:
+      env:
+        POSTGRES_PASSWORD: postgres
+      image: postgres:13
+      name: postgres
+      networks:
+      - name: tools
+      restart_policy: unless-stopped
+      state: started
+      volumes:
+      - '{{ storage }}/postgres/conf/postgres-initdb.sql:/docker-entrypoint-initdb.d/init.sql'
+      - '{{ storage }}/postgres/data:/var/lib/postgresql/data'
+  
+  - name: '[SonarQube] create volume paths'
+    file:
+      path: '{{ item }}'
+      state: directory
+    loop:
+    - '{{ storage }}/sonarqube/data'
+    - '{{ storage }}/sonarqube/logs'
+    - '{{ storage }}/sonarqube/extensions'
+  - name: '[SonarQube] set kernel parameters'
+    sysctl:
+      name: '{{ item.name }}'
+      reload: true
+      sysctl_set: true
+      value: '{{ item.value }}'
+    loop:
+    - { name: vm.max_map_count, value: 262144 }
+    - { name: fs.file-max, value: 65536 }
+  - name: '[SonarQube] start container'
+    docker_container:
+      env:
+        SONAR_JDBC_USERNAME: sonar
+        SONAR_JDBC_PASSWORD: sonar
+        SONAR_JDBC_URL: 'jdbc:postgresql://postgres/sonar'
+        SONAR_WEB_CONTEXT: '/sonarqube'
+      image: sonarqube:8-community
+      name: sonarqube
+      networks: 
+      - name: tools
+      ports:
+      - 9000:9000
+      restart_policy: unless-stopped
+      state: started
+      volumes:
+      - '{{ storage }}/sonarqube/data:/opt/sonarqube/data'
+      - '{{ storage }}/sonarqube/logs:/opt/sonarqube/logs'
+      - '{{ storage }}/sonarqube/extensions:/opt/sonarqube/extensions'
+  - name: '[SonarQube] wait for service to become available'
+    wait_for:
+      port: 9000
+      delay: 60
+  - name: '[SonarQube] update admin password'
+    uri:
+      body: "login=admin&password=letmein&previousPassword=admin"
+      method: POST
+      status_code: 204
+      password: admin
+      url: http://localhost:9000/sonarqube/api/users/change_password
+      user: admin
+  - name: '[SonarQube] create Jenkins WebHook'
+    uri:
+      body: "name=Jenkins&url=http://{{ server }}/jenkins"
+      method: POST
+      password: letmein
+      status_code: 200
+      url: http://localhost:9000/sonarqube/api/webhooks/create
+      user: admin
+  - name: '[SonarQube] create default Access Token'
+    uri:
+      body: "name=default"
+      method: POST
+      password: letmein
+      status_code: 200
+      url: http://localhost:9000/sonarqube/api/user_tokens/generate
+      user: admin
+    register: sonarqube
+  
+  - debug:
+      msg: '{{ sonarqube.token }}'
+  
+  - name: '[Nexus] create volume paths'
+    file:
+      path: '{{ storage }}/nexus/data'
+      state: directory
+  - name: '[Nexus] start container'
+    docker_container:
+      env:
+        NEXUS_CONTEXT: 'nexus'
+      image: sonatype/nexus3:latest
+      name: nexus
+      networks: 
+      - name: tools
+      ports:
+      - 8081:8081
+      restart_policy: unless-stopped
+      state: started
+      volumes:
+      - '{{ storage }}/nexus/data:/nexus-data'
+  - name: '[SonarQube] wait for service to become available'
+    wait_for:
+      port: 8081
+      delay: 60
+  - name: '[SonarQube] update admin password'
+    uri:
+      body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
+      headers:
+        Content-Type: 'Content-Type: application/json'
+      method: POST
+      password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
+      status_code: 204
+      url: http://localhost:8081/nexus/service/rest/v1/script
+      user: admin
+  - uri:
+      headers:
+        Content-Type: 'Content-Type: text/plain'
+      method: POST
+      password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
+      status_code: 204
+      url: http://localhost:8081/nexus/service/rest/v1/script/updatePassword/run
+      user: admin
+
+  - name: '[Jenkins] create volume paths'
+    file:
+      path: '{{ storage }}/jenkins/home'
+      state: directory
+  - name: '[Jenkins] calculating buildargs for docker image'
+    shell: 'id -g {{ username }}'
+    register: GROUP_ID
+  - shell: 'id -u {{ username }}'
+    register: USER__ID
+  - name: '[Jenkins] build docker image'
+    docker_image:
+      buildargs:
+        gid: '{{ GROUP_ID }}'
+        uid: '{{ USER__ID }}'
+      name: 'toolchain/jenkins'
+      path: '{{ home }}/jenkins'
+  - name: '[Jenkins] updating CasC'
+    shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.token }}|" {{ storage }}/jenkins/conf/jenkins.yml'
+  - name: '[Jenkins] start container'
+    docker_container:
+      env:
+        CASC_JENKINS_CONFIG: '/usr/share/jenkins/ref/casc_configs'
+        JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
+        JENKINS_OPTS: '--prefix=/jenkins'
+      image: toolchain/jenkins
+      name: jenkins
+      networks: 
+      - name: tools
+      restart_policy: unless-stopped
+      state: started
+      volumes:
+      - '{{ storage }}/jenkins/home:/var/jenkins_home'
+      - '{{ storage }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+  vars:
+    home: '/home/{{ username }}/cicd-toolchain'
+    server: 'toolchain.eastus.cloudapp.azure.com'
+    storage: '{{ home }}/storage'
+    username: 'tools'
+  
