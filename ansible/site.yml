@@ -66,6 +66,15 @@
     - '{{ storage }}/sonarqube/data'
     - '{{ storage }}/sonarqube/logs'
     - '{{ storage }}/sonarqube/extensions'
+  - name: '[SonarQube] set kernel parameters'
+    sysctl:
+      name: '{{ item.name }}'
+      reload: true
+      sysctl_set: true
+      value: '{{ item.value }}'
+    loop:
+    - { name: vm.max_map_count, value: 262144 }
+    - { name: fs.file-max, value: 65536 }
   - name: '[SonarQube] start container'
     docker_container:
       env:
