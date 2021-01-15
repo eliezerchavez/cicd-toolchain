@@ -1,12 +1,6 @@
 ---
 - hosts: localhost
   tasks:
-  - set_fact:
-      username: '{{ ansible_user_id }}'
-
-- hosts: localhost
-  become: true
-  tasks:
   - name: 'install pre-requisites'
     apt:
       pkg:
@@ -41,18 +35,14 @@
       append: true
       groups: docker
       name: '{{ username }}'
-  - name: 'reset ssh connection'
-    meta: reset_connection
 
-- hosts: localhost
-  tasks:
   - name: 'create docker network'
     docker_network:
       name: tools
 
   - name: '[PostgreSQL] create volume paths'
     file:
-      path: './storage/postgres/data'
+      path: '{{ storage }}/postgres/data'
       state: directory
   - name: '[PostgreSQL] start container'
     docker_container:
@@ -60,22 +50,22 @@
         POSTGRES_PASSWORD: postgres
       image: postgres:13
       name: postgres
-      networks: 
-      - tools
+      networks:
+      - name: tools
       restart_policy: unless-stopped
       state: started
       volumes:
-      - './storage/postgres/conf/postgres-initdb.sql:/docker-entrypoint-initdb.d/init.sql'
-      - './storage/postgres/data:/var/lib/postgresql/data'
+      - '{{ storage }}/postgres/conf/postgres-initdb.sql:/docker-entrypoint-initdb.d/init.sql'
+      - '{{ storage }}/postgres/data:/var/lib/postgresql/data'
   
   - name: '[SonarQube] create volume paths'
     file:
       path: '{{ item }}'
       state: directory
     loop:
-    - './storage/sonarqube/data'
-    - './storage/sonarqube/logs'
-    - './storage/sonarqube/extensions'
+    - '{{ storage }}/sonarqube/data'
+    - '{{ storage }}/sonarqube/logs'
+    - '{{ storage }}/sonarqube/extensions'
   - name: '[SonarQube] start container'
     docker_container:
       env:
@@ -92,10 +82,13 @@
       restart_policy: unless-stopped
       state: started
       volumes:
-      - './storage/sonarqube/data:/opt/sonarqube/data'
-      - './storage/sonarqube/logs:/opt/sonarqube/logs'
-      - './storage/sonarqube/extensions:/opt/sonarqube/extensions'
+      - '{{ storage }}/sonarqube/data:/opt/sonarqube/data'
+      - '{{ storage }}/sonarqube/logs:/opt/sonarqube/logs'
+      - '{{ storage }}/sonarqube/extensions:/opt/sonarqube/extensions'
   - name: '[SonarQube] wait for service to become available'
     wait_for:
       port: 9000
       delay: 120
+  vars:
+    username: 'tools'
+    storage: '/home/{{ tools }}/cicd-toolchain/storage'
