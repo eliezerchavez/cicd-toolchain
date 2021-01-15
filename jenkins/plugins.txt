@@ -1,4 +1,4 @@
-jackson2-api:2.11.3 # https://github.com/docker-java/docker-java/issues/1509
+jackson2-api:2.12.1
 antisamy-markup-formatter
 authorize-project
 build-name-setter
@@ -21,7 +21,7 @@ github-branch-source
 greenballs
 htmlpublisher
 jenkins-multijob-plugin
-junit:1.46
+junit:1.48
 locale
 mailer
 nexus-jenkins-plugin
