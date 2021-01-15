@@ -57,6 +57,11 @@ jenkins:
       - id: 'admin'
         password: 'admin'
   systemMessage: 'Jenkins configured using CasC.'
+security:
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: 'triggeringUsersAuthorizationStrategy'
 unclassified:
   location:
     url: 'http://localhost/jenkins'
