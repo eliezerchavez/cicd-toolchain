@@ -111,6 +111,7 @@
   - name: '[SonarQube] create Jenkins WebHook'
     uri:
       body: "name=Jenkins&url=http://{{ server }}/jenkins"
+      force_basic_auth: true
       method: POST
       password: letmein
       status_code: 200
@@ -119,6 +120,7 @@
   - name: '[SonarQube] create default Access Token'
     uri:
       body: "name=default"
+      force_basic_auth: true
       method: POST
       password: letmein
       status_code: 200
@@ -154,6 +156,7 @@
   - name: '[Nexus] update admin password'
     uri:
       body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
+      force_basic_auth: true
       headers:
         Content-Type: 'Content-Type: application/json'
       method: POST
@@ -162,6 +165,7 @@
       url: http://localhost:8081/nexus/service/rest/v1/script
       user: admin
   - uri:
+      force_basic_auth: true
       headers:
         Content-Type: 'Content-Type: text/plain'
       method: POST
