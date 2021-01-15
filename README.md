@@ -19,30 +19,13 @@ This tools fit into one or more activities, which supports specific DevOps initi
 ## Author 🖋️
 * **Eliezer Efrain Chavez** -  [eliezerchavez](https://www.linkedin.com/in/eliezerchavez)
 
+## Local Installation
 ### Pre-Requisites 📋
 
 * [Docker](https://www.docker.com/get-started) <br />
   A set of Platform as a Service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.
 * [Docker Compose](https://docs.docker.com/compose/) <br />
   Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
-
-The following is *completely optional*!!!:<br />
-If your machine doesn't have enough resources to run this demo environment, you could use the provided [ARM Template](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) to provision the recommended environment.<br />
-
-* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-  ```bash
-  az group create -g CICDToolchain
-  az group deployment create -g CICDToolchain -n CICDToolchain --template-file ./toolchain.json \
-    --parameters adminUsername=${USER} adminPublicKey="$(cat ~/.ssh/id_rsa.pub)"
-  ```
-* PowerShell
-  ```powershell
-  New-AzResourceGroup -Name CICDToolchain
-  New-AzResourceGroupDeployment -ResourceGroupName CICDToolchain `
-    -TemplateFile toolchain.json `
-    -adminUsername <username> `
-    -adminPublicKey <pubkey>
-  ```
 ### Install ✔️
 
 Make sure you have sudo capabilities before run:
@@ -64,3 +47,30 @@ Make sure you have sudo capabilities before run:
 ```bash
 toolchain.sh clean
 ```
+
+## Azure Installation
+The following is *completely optional*!!!<br />
+If your machine doesn't have enough resources to run this demo environment, you could use the provided [ARM Template](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) to provision the recommended environment.<br />
+
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+  ```bash
+  az group create -g CICDToolchain
+  az group deployment create -g CICDToolchain -n CICDToolchain --template-file ./toolchain.json \
+    --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)" domainNameLabel=<label>
+  ```
+* PowerShell
+  ```powershell
+  New-AzResourceGroup -Name CICDToolchain
+  New-AzResourceGroupDeployment -ResourceGroupName CICDToolchain `
+    -TemplateFile toolchain.json `
+    -domainNameLabel <label> `
+    -adminPublicKey <pubkey>
+  ```
+
+After that you can access the tools via:
+
+Tool | URL
+---- | ---
+Jenkins | http://\<label>.eastus.cloudapp.azure.com/jenkins
+SonarQube | http://\<label>.eastus.cloudapp.azure.com/sonarqube
+Nexus | http://\<label>.eastus.cloudapp.azure.com/nexus
