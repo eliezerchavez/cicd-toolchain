@@ -47,7 +47,7 @@
 - hosts: localhost
   tasks:
   - name: 'create docker network'
-    community.general.docker_network:
+    docker_network:
       name: tools
 
   - name: '[PostgreSQL] create volume paths'
