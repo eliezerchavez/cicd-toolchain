@@ -36,15 +36,13 @@
         },
         "vmSize": {
             "type": "string",
-            "defaultValue": "Standard_DS3_v2_Promo",
+            "defaultValue": "Standard_DS3_v2",
             "allowedValues": [
                 "Standard_B4ms",
                 "Standard_DS3_v2",
-                "Standard_DS3_v2_Promo",
                 "Standard_F4s",
                 "Standard_D4s_v3",
                 "Standard_D3_v2",
-                "Standard_D3_v2_Promo",
                 "Standard_F4",
                 "Standard_A4_v2",
                 "Standard_D4_v3",
