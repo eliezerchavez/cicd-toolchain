@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- become: true
+  hosts: localhost
   tasks:
   - name: 'install pre-requisites'
     apt:
@@ -145,11 +146,11 @@
       state: started
       volumes:
       - '{{ storage }}/nexus/data:/nexus-data'
-  - name: '[SonarQube] wait for service to become available'
+  - name: '[Nexus] wait for service to become available'
     wait_for:
       port: 8081
       delay: 60
-  - name: '[SonarQube] update admin password'
+  - name: '[Nexus] update admin password'
     uri:
       body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
       headers:
