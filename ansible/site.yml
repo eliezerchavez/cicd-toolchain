@@ -48,8 +48,7 @@
   tasks:
   - name: 'create docker network'
     docker_network:
-      name:
-      - tools
+      name: tools
 
   - name: '[PostgreSQL] create volume paths'
     file:
