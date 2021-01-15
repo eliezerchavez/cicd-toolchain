@@ -47,6 +47,8 @@ jenkins:
         remoteFs: '/home/jenkins/agent'
         retentionStrategy:
           idleMinutes: 2
+  remotingSecurity:
+    enabled: true
   securityRealm:
     local:
       allowsSignup: false
