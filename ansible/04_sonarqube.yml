@@ -1,0 +1,70 @@
+- name: '[SonarQube] create volume paths'
+  file:
+    group: '{{ username }}'
+    owner: '{{ username }}'
+    path: '{{ item }}'
+    state: directory
+  loop:
+  - '{{ storage }}/sonarqube/data'
+  - '{{ storage }}/sonarqube/logs'
+  - '{{ storage }}/sonarqube/extensions'
+- name: '[SonarQube] set kernel parameters'
+  sysctl:
+    name: '{{ item.name }}'
+    reload: true
+    sysctl_set: true
+    value: '{{ item.value }}'
+  loop:
+  - { name: vm.max_map_count, value: 262144 }
+  - { name: fs.file-max, value: 65536 }
+- name: '[SonarQube] start container'
+  docker_container:
+    env:
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+      SONAR_JDBC_URL: 'jdbc:postgresql://postgres/sonar'
+      SONAR_WEB_CONTEXT: '/sonarqube'
+    image: sonarqube:8-community
+    name: sonarqube
+    networks: 
+    - name: tools
+    ports:
+    - 9000:9000
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+    - '{{ storage }}/sonarqube/data:/opt/sonarqube/data'
+    - '{{ storage }}/sonarqube/logs:/opt/sonarqube/logs'
+    - '{{ storage }}/sonarqube/extensions:/opt/sonarqube/extensions'
+- name: '[SonarQube] wait for service to become available'
+  wait_for:
+    port: 9000
+    delay: 120
+- name: '[SonarQube] update admin password'
+  uri:
+    body: "login=admin&password=letmein&previousPassword=admin"
+    force_basic_auth: true
+    method: POST
+    status_code: 204
+    password: admin
+    url: 'http://localhost:9000/sonarqube/api/users/change_password'
+    user: admin
+- name: '[SonarQube] create Jenkins WebHook'
+  uri:
+    body: "name=Jenkins&url=http://{{ server }}/jenkins"
+    force_basic_auth: true
+    method: POST
+    password: letmein
+    status_code: 200
+    url: 'http://localhost:9000/sonarqube/api/webhooks/create'
+    user: admin
+- name: '[SonarQube] create default Access Token'
+  uri:
+    body: "name=default"
+    force_basic_auth: true
+    method: POST
+    password: letmein
+    status_code: 200
+    url: 'http://localhost:9000/sonarqube/api/user_tokens/generate'
+    user: admin
+  register: sonarqube

@@ -1,19 +1,4 @@
 ---
-credentials:
-  system:
-    domainCredentials:
-    - credentials:
-      - string:
-          description: "Sonarqube Default Token"
-          id: "sonarqube"
-          scope: GLOBAL
-          secret: {SONARQUBE_TOKEN}
-      - usernamePassword:
-          description: "Nexus Repository Manager OSS Credentials"
-          id: "nexus"
-          password: letmein
-          scope: GLOBAL
-          username: "admin"
 jenkins:
   authorizationStrategy:
     roleBased:

@@ -1,0 +1,29 @@
+---
+- name: '[docker] add apt repository key'
+  apt_key:
+    url: 'https://download.docker.com/linux/ubuntu/gpg'
+- name: '[docker] add apt repository into sources list'
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+    update_cache: true
+- name: '[docker] install'
+  apt:
+    pkg:
+    - containerd.io
+    - docker-ce
+    - docker-ce-cli
+    - docker-compose
+    update_cache: true
+- name: '[docker] start'
+  service:
+    enabled: true
+    name: docker
+    state: started
+- name: '[docker] associate {{ username }} to docker group'
+  user:
+    append: true
+    groups: docker
+    name: '{{ username }}'
+- name: '[docker] create tools network'
+  docker_network:
+    name: tools
