@@ -67,7 +67,7 @@
         },
         "customData": {
             "type": "string",
-            "defaultValue": "IyEvdXNyL2Jpbi9lbnYgYmFzaAphcHQtZ2V0IHVwZGF0ZSAmJiBhcHQtZ2V0IGluc3RhbGwgLXkgYW5zaWJsZSBcCnN1IC1jICJnaXQgY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL2VsaWV6ZXJjaGF2ZXovY2ljZC10b29sY2hhaW4iIC0gdG9vbHMK"
+            "defaultValue": "IyEvdXNyL2Jpbi9lbnYgYmFzaAphcHQtZ2V0IHVwZGF0ZSAmJiBhcHQtZ2V0IGluc3RhbGwgLXkgYW5zaWJsZQpzdSAtYyAiZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9lbGllemVyY2hhdmV6L2NpY2QtdG9vbGNoYWluIiAtIHRvb2xzCg=="
         },
         "nicName": {
             "type": "string",
