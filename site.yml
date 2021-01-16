@@ -1,5 +1,6 @@
 ---
 - become: true
+  connection: local
   hosts: localhost
   tasks:
   - name: 'install pre-requisites'
