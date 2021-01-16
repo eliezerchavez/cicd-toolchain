@@ -9,6 +9,7 @@
       - ca-certificates
       - curl
       - gnupg-agent
+      - jq
       - software-properties-common
       update_cache: true
   - name: 'add docker apt repository key'
@@ -43,6 +44,8 @@
 
   - name: '[PostgreSQL] create volume paths'
     file:
+      group: '{{ user }}'
+      owner: '{{ user }}'
       path: '{{ storage }}/postgres/data'
       state: directory
   - name: '[PostgreSQL] start container'
@@ -61,6 +64,8 @@
   
   - name: '[SonarQube] create volume paths'
     file:
+      group: '{{ user }}'
+      owner: '{{ user }}'
       path: '{{ item }}'
       state: directory
     loop:
@@ -129,10 +134,13 @@
     register: sonarqube
   
   - debug:
-      msg: '{{ sonarqube.token }}'
+      msg: '{{ sonarqube.json.token }}'
   
   - name: '[Nexus] create volume paths'
     file:
+      group: '{{ user }}'
+      mode: 777
+      owner: '{{ user }}'
       path: '{{ storage }}/nexus/data'
       state: directory
   - name: '[Nexus] start container'
@@ -152,7 +160,7 @@
   - name: '[Nexus] wait for service to become available'
     wait_for:
       port: 8081
-      delay: 60
+      delay: 30
   - name: '[Nexus] update admin password'
     uri:
       body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
@@ -176,6 +184,8 @@
 
   - name: '[Jenkins] create volume paths'
     file:
+      group: '{{ user }}'
+      owner: '{{ user }}'
       path: '{{ storage }}/jenkins/home'
       state: directory
   - name: '[Jenkins] calculating buildargs for docker image'
@@ -191,7 +201,7 @@
       name: 'toolchain/jenkins'
       path: '{{ home }}/jenkins'
   - name: '[Jenkins] updating CasC'
-    shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.token }}|" {{ storage }}/jenkins/conf/jenkins.yml'
+    shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.json.token }}|" {{ storage }}/jenkins/conf/jenkins.yml'
   - name: '[Jenkins] start container'
     docker_container:
       env:
