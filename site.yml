@@ -44,8 +44,8 @@
 
   - name: '[PostgreSQL] create volume paths'
     file:
-      group: '{{ user }}'
-      owner: '{{ user }}'
+      group: '{{ username }}'
+      owner: '{{ username }}'
       path: '{{ storage }}/postgres/data'
       state: directory
   - name: '[PostgreSQL] start container'
@@ -64,8 +64,8 @@
   
   - name: '[SonarQube] create volume paths'
     file:
-      group: '{{ user }}'
-      owner: '{{ user }}'
+      group: '{{ username }}'
+      owner: '{{ username }}'
       path: '{{ item }}'
       state: directory
     loop:
@@ -138,9 +138,9 @@
   
   - name: '[Nexus] create volume paths'
     file:
-      group: '{{ user }}'
+      group: '{{ username }}'
       mode: 777
-      owner: '{{ user }}'
+      owner: '{{ username }}'
       path: '{{ storage }}/nexus/data'
       state: directory
   - name: '[Nexus] start container'
@@ -184,8 +184,8 @@
 
   - name: '[Jenkins] create volume paths'
     file:
-      group: '{{ user }}'
-      owner: '{{ user }}'
+      group: '{{ username }}'
+      owner: '{{ username }}'
       path: '{{ storage }}/jenkins/home'
       state: directory
   - name: '[Jenkins] calculating buildargs for docker image'
