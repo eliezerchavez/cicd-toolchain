@@ -1,0 +1,12 @@
+---
+- name: "[pre-requisites] install"
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - jq
+      - python3-docker
+      - software-properties-common
+    update_cache: true

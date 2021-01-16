@@ -22,15 +22,17 @@ This tools fit into one or more activities, which supports specific DevOps initi
 ## Local Installation
 ### Pre-Requisites 📋
 
-* [Docker](https://www.docker.com/get-started) <br />
-  A set of Platform as a Service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.
-* [Docker Compose](https://docs.docker.com/compose/) <br />
-  Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) <br />
+  Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code. It runs on many Unix-like systems, and can configure both Unix-like systems as well as Microsoft Windows.
 ### Install ✔️
 
 Make sure you have sudo capabilities before run:
 ```bash
-toolchain.sh init
+ansible-playbook site.yml
+```
+by default the server used is ```localhost```, if you want to change it then run:
+```bash
+ansible-playbook site.yml --extra-vars "server=<FQDN>"
 ```
 
 After that you can access the tools via:
@@ -45,7 +47,7 @@ Nexus | http://localhost/nexus
 
 Make sure you have sudo capabilities before run:
 ```bash
-toolchain.sh clean
+clean.sh
 ```
 
 ## Azure Installation
@@ -55,14 +57,14 @@ If your machine doesn't have enough resources to run this demo environment, you 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
   ```bash
   az group create -g CICDToolchain
-  az group deployment create -g CICDToolchain -n CICDToolchain --template-file ./toolchain.json \
+  az group deployment create -g CICDToolchain -n CICDToolchain --template-file azure/toolchain.json \
     --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)" domainNameLabel=<label>
   ```
-* PowerShell
+* [PowerShell](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-5.3.0)
   ```powershell
   New-AzResourceGroup -Name CICDToolchain
   New-AzResourceGroupDeployment -ResourceGroupName CICDToolchain `
-    -TemplateFile toolchain.json `
+    -TemplateFile azure/toolchain.json `
     -domainNameLabel <label> `
     -adminPublicKey <pubkey>
   ```
@@ -71,6 +73,6 @@ After that you can access the tools via:
 
 Tool | URL
 ---- | ---
-Jenkins | http://\<label>.eastus.cloudapp.azure.com/jenkins
-SonarQube | http://\<label>.eastus.cloudapp.azure.com/sonarqube
-Nexus | http://\<label>.eastus.cloudapp.azure.com/nexus
+Jenkins | http://\<label>.\<region>.cloudapp.azure.com/jenkins<br />e.g. http://toolchain.westus.cloudapp.azure.com/jenkins
+SonarQube | http://\<label>.\<region>.cloudapp.azure.com/sonarqube<br />e.g. http://toolchain.westus.cloudapp.azure.com/sonarqube
+Nexus | http://\<label>.\<region>.cloudapp.azure.com/nexus<br />e.g. http://toolchain.westus.cloudapp.azure.com/nexus

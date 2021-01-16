@@ -1,0 +1,54 @@
+---
+- name: "[Nexus] create volume paths"
+  file:
+    group: "{{ username }}"
+    mode: 0777
+    owner: "{{ username }}"
+    path: "{{ storage }}/nexus/data"
+    state: directory
+
+- name: "[Nexus] start container"
+  docker_container:
+    env:
+      NEXUS_CONTEXT: "nexus"
+    image: sonatype/nexus3:latest
+    name: nexus
+    networks:
+      - name: tools
+    ports:
+      - 8081:8081
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "{{ storage }}/nexus/data:/nexus-data"
+
+- name: "[Nexus] wait for service to become available"
+  wait_for:
+    port: 8081
+    delay: 60
+
+- name: "[Nexus] update admin password"
+  uri:
+    body: "letmein"
+    force_basic_auth: true
+    headers:
+      accept: "application/json"
+      Content-Type: "text/plain"
+    method: PUT
+    password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
+    status_code: 204
+    url: "http://localhost:8081/nexus/service/rest/v1/security/users/admin/change-password"
+    user: admin
+
+- name: "[Nexus] disable anonymous access"
+  uri:
+    body: '{ "enabled": false, "userId": "anonymous" }'
+    force_basic_auth: true
+    headers:
+      accept: "application/json"
+      Content-Type: "application/json"
+    method: PUT
+    password: letmein
+    status_code: 200
+    url: "http://localhost:8081/nexus/service/rest/v1/security/anonymous"
+    user: admin

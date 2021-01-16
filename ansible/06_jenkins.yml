@@ -1,0 +1,70 @@
+---
+- name: "[Jenkins] create volume paths"
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ storage }}/jenkins/home"
+    - "{{ home }}/jenkins/conf"
+
+- name: "[Jenkins] calculating buildargs for docker image"
+  shell: "id -g {{ username }}"
+  register: GROUP_ID
+- shell: "id -u {{ username }}"
+  register: USER__ID
+
+- name: "[Jenkins] build docker image"
+  docker_image:
+    buildargs:
+      gid: "{{ GROUP_ID.stdout }}"
+      uid: "{{ USER__ID.stdout }}"
+    name: "toolchain/jenkins"
+    path: "{{ home }}/jenkins"
+
+- name: "[Jenkins] updating CasC"
+  template:
+    dest: "{{ home }}/jenkins/conf/jenkins.yml"
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    src: "{{ home }}/ansible/templates/jenkins.j2"
+
+- name: "[Jenkins] start container"
+  docker_container:
+    env:
+      CASC_JENKINS_CONFIG: "/usr/share/jenkins/ref/casc_configs"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JENKINS_OPTS: "--prefix=/jenkins"
+    image: toolchain/jenkins
+    name: jenkins
+    networks:
+      - name: tools
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "{{ storage }}/jenkins/home:/var/jenkins_home"
+      - "{{ home }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+- name: "[Jenkins] associate jenkins to docker group"
+  shell: |-
+    docker exec -u root jenkins bash -c "getent group docker || groupadd -rg $(getent group docker | cut -d':' -f3) docker && usermod -aG docker jenkins"
+
+- name: "[Jenkins] restart container"
+  docker_container:
+    env:
+      CASC_JENKINS_CONFIG: "/usr/share/jenkins/ref/casc_configs"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JENKINS_OPTS: "--prefix=/jenkins"
+    image: toolchain/jenkins
+    name: jenkins
+    networks:
+      - name: tools
+    restart: true
+    restart_policy: unless-stopped
+    state: started
+    volumes:
+      - "{{ storage }}/jenkins/home:/var/jenkins_home"
+      - "{{ home }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
