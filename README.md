@@ -22,10 +22,8 @@ This tools fit into one or more activities, which supports specific DevOps initi
 ## Local Installation
 ### Pre-Requisites 📋
 
-* [Docker](https://www.docker.com/get-started) <br />
-  A set of Platform as a Service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.
-* [Docker Compose](https://docs.docker.com/compose/) <br />
-  Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) <br />
+  Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code. It runs on many Unix-like systems, and can configure both Unix-like systems as well as Microsoft Windows.
 ### Install ✔️
 
 Make sure you have sudo capabilities before run:

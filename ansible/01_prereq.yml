@@ -7,5 +7,6 @@
       - curl
       - gnupg-agent
       - jq
+      - python3-docker
       - software-properties-common
     update_cache: true
