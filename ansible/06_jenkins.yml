@@ -32,5 +32,5 @@
     state: started
     volumes:
       - "{{ storage }}/jenkins/home:/var/jenkins_home"
-      - "{{ storage }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "{{ home }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
