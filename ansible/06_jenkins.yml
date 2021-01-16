@@ -1,36 +1,36 @@
-- name: '[Jenkins] create volume paths'
+- name: "[Jenkins] create volume paths"
   file:
-    group: '{{ username }}'
-    owner: '{{ username }}'
-    path: '{{ storage }}/jenkins/home'
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: "{{ storage }}/jenkins/home"
     state: directory
-- name: '[Jenkins] calculating buildargs for docker image'
-  shell: 'id -g {{ username }}'
+- name: "[Jenkins] calculating buildargs for docker image"
+  shell: "id -g {{ username }}"
   register: GROUP_ID
-- shell: 'id -u {{ username }}'
+- shell: "id -u {{ username }}"
   register: USER__ID
-- name: '[Jenkins] build docker image'
+- name: "[Jenkins] build docker image"
   docker_image:
     buildargs:
-      gid: '{{ GROUP_ID.stdout }}'
-      uid: '{{ USER__ID.stdout }}'
-    name: 'toolchain/jenkins'
-    path: '{{ home }}/jenkins'
+      gid: "{{ GROUP_ID.stdout }}"
+      uid: "{{ USER__ID.stdout }}"
+    name: "toolchain/jenkins"
+    path: "{{ home }}/jenkins"
 # - name: '[Jenkins] updating CasC'
 #   shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.json.token }}|" {{ home }}/jenkins/conf/jenkins.yml'
-- name: '[Jenkins] start container'
+- name: "[Jenkins] start container"
   docker_container:
     env:
-      CASC_JENKINS_CONFIG: '/usr/share/jenkins/ref/casc_configs'
-      JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
-      JENKINS_OPTS: '--prefix=/jenkins'
+      CASC_JENKINS_CONFIG: "/usr/share/jenkins/ref/casc_configs"
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      JENKINS_OPTS: "--prefix=/jenkins"
     image: toolchain/jenkins
     name: jenkins
-    networks: 
-    - name: tools
+    networks:
+      - name: tools
     restart_policy: unless-stopped
     state: started
     volumes:
-    - '{{ storage }}/jenkins/home:/var/jenkins_home'
-    - '{{ storage }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml'
-    - '/var/run/docker.sock:/var/run/docker.sock'
+      - "{{ storage }}/jenkins/home:/var/jenkins_home"
+      - "{{ storage }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"

@@ -1,12 +1,11 @@
 ---
-- name: '[pre-requisites] install'
+- name: "[pre-requisites] install"
   apt:
     pkg:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - gnupg-agent
-    - jq
-    - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - jq
+      - software-properties-common
     update_cache: true
-  

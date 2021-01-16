@@ -1,19 +1,19 @@
-- name: '[PostgreSQL] create volume paths'
+- name: "[PostgreSQL] create volume paths"
   file:
-    group: '{{ username }}'
-    owner: '{{ username }}'
-    path: '{{ storage }}/postgres/data'
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: "{{ storage }}/postgres/data"
     state: directory
-- name: '[PostgreSQL] start container'
+- name: "[PostgreSQL] start container"
   docker_container:
     env:
       POSTGRES_PASSWORD: postgres
     image: postgres:13
     name: postgres
     networks:
-    - name: tools
+      - name: tools
     restart_policy: unless-stopped
     state: started
     volumes:
-    - '{{ storage }}/postgres/conf/postgres-initdb.sql:/docker-entrypoint-initdb.d/init.sql'
-    - '{{ storage }}/postgres/data:/var/lib/postgresql/data'
+      - "{{ storage }}/postgres/conf/postgres-initdb.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "{{ storage }}/postgres/data:/var/lib/postgresql/data"

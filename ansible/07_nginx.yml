@@ -1,13 +1,13 @@
-- name: '[NGINX] start container'
+- name: "[NGINX] start container"
   docker_container:
     image: nginx:stable
     name: nginx
-    networks: 
-    - name: tools
+    networks:
+      - name: tools
     ports:
-    - 80:80
-    - 443:443
+      - 80:80
+      - 443:443
     restart_policy: unless-stopped
     state: started
     volumes:
-    - '{{ storage }}/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf'
+      - "{{ storage }}/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf"
