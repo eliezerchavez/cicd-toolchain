@@ -103,7 +103,7 @@
   - name: '[SonarQube] wait for service to become available'
     wait_for:
       port: 9000
-      delay: 30
+      delay: 120
   - name: '[SonarQube] update admin password'
     uri:
       body: "login=admin&password=letmein&previousPassword=admin"
@@ -160,7 +160,7 @@
   - name: '[Nexus] wait for service to become available'
     wait_for:
       port: 8081
-      delay: 30
+      delay: 120
   - name: '[Nexus] update admin password'
     uri:
       body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
