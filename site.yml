@@ -134,9 +134,6 @@
       user: admin
     register: sonarqube
   
-  - debug:
-      msg: '{{ sonarqube.json.token }}'
-  
   - name: '[Nexus] create volume paths'
     file:
       group: '{{ username }}'
@@ -206,7 +203,7 @@
       name: 'toolchain/jenkins'
       path: '{{ home }}/jenkins'
   - name: '[Jenkins] updating CasC'
-    shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.json.token }}|" {{ storage }}/jenkins/conf/jenkins.yml'
+    shell: 'sed -i "s|{SONARQUBE_TOKEN}|{{ sonarqube.json.token }}|" {{ home }}/jenkins/conf/jenkins.yml'
   - name: '[Jenkins] start container'
     docker_container:
       env:
@@ -223,6 +220,20 @@
       - '{{ storage }}/jenkins/home:/var/jenkins_home'
       - '{{ storage }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml'
       - '/var/run/docker.sock:/var/run/docker.sock'
+
+  - name: '[NGINX] start container'
+    docker_container:
+      image: nginx:stable
+      name: nginx
+      networks: 
+      - name: tools
+      ports:
+      - 80:80
+      - 443:443
+      restart_policy: unless-stopped
+      state: started
+      volumes:
+      - '{{ storage }}/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf'
 
   vars:
     home: '/home/{{ username }}/cicd-toolchain'
