@@ -40,6 +40,7 @@ warning() {
     if [ ${tries} -eq ${maxTries} ]; then
         exit 1
     fi
+    tput init
 }
 
 #
@@ -81,20 +82,16 @@ doClean() {
 until [ -z "$1" ] #until all parameters used up...
 do
     case "$1" in
-        *|"--help")
+        "--help")
             usage
             ;;
     esac
     shift
 done
 
-#
-#command validation
-#
-if [ ! -n "$command" ]; then 
-    usage
-fi
-
 warning
-docker rm -f $(docker ps -a)
+docker rm -f $(docker ps -qa) 2>/dev/null
 doClean
+
+echo ""
+echo " DONE."
