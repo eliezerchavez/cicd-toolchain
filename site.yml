@@ -170,7 +170,7 @@
       method: PUT
       password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
       status_code: 204
-      url: 'http://localhost:8081/service/rest/v1/security/users/admin/change-password'
+      url: 'http://localhost:8081/nexus/service/rest/v1/security/users/admin/change-password'
       user: admin
   - name: '[Nexus] disable anonymous access'
     uri:
@@ -184,7 +184,7 @@
       method: PUT
       password: letmein
       status_code: 200
-      url: 'http://localhost:8081/nexus/service/rest/v1/script/updatePassword/run'
+      url: 'http://localhost:8081/nexus/service/rest/v1/security/anonymous'
       user: admin
 
   - name: '[Jenkins] create volume paths'
