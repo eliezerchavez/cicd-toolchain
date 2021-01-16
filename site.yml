@@ -163,6 +163,7 @@
       delay: 60
   - name: '[Nexus] update admin password'
     uri:
+      body: "letmein"
       force_basic_auth: true
       headers:
         accept: 'application/json'
@@ -174,9 +175,7 @@
       user: admin
   - name: '[Nexus] disable anonymous access'
     uri:
-      body:
-        enabled: false
-        userId: anonymous
+      body: '{ "enabled": false, "userId": "anonymous" }'
       force_basic_auth: true
       headers:
         accept: 'application/json'
@@ -201,8 +200,8 @@
   - name: '[Jenkins] build docker image'
     docker_image:
       buildargs:
-        gid: '{{ GROUP_ID }}'
-        uid: '{{ USER__ID }}'
+        gid: '{{ GROUP_ID.stdout }}'
+        uid: '{{ USER__ID.stdout }}'
       name: 'toolchain/jenkins'
       path: '{{ home }}/jenkins'
   - name: '[Jenkins] updating CasC'
