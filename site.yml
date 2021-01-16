@@ -139,7 +139,7 @@
   - name: '[Nexus] create volume paths'
     file:
       group: '{{ username }}'
-      mode: 777
+      mode: 0777
       owner: '{{ username }}'
       path: '{{ storage }}/nexus/data'
       state: directory
@@ -160,26 +160,31 @@
   - name: '[Nexus] wait for service to become available'
     wait_for:
       port: 8081
-      delay: 120
+      delay: 60
   - name: '[Nexus] update admin password'
     uri:
-      body: "{{ lookup('file','nexus/initialConfig.groovy') }}"
       force_basic_auth: true
       headers:
-        Content-Type: 'Content-Type: application/json'
-      method: POST
+        accept: 'application/json'
+        Content-Type: 'text/plain'
+      method: PUT
       password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
       status_code: 204
-      url: http://localhost:8081/nexus/service/rest/v1/script
+      url: 'http://localhost:8081/service/rest/v1/security/users/admin/change-password'
       user: admin
-  - uri:
+  - name: '[Nexus] disable anonymous access'
+    uri:
+      body:
+        enabled: false
+        userId: anonymous
       force_basic_auth: true
       headers:
-        Content-Type: 'Content-Type: text/plain'
-      method: POST
-      password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
-      status_code: 204
-      url: http://localhost:8081/nexus/service/rest/v1/script/updatePassword/run
+        accept: 'application/json'
+        Content-Type: 'application/json'
+      method: PUT
+      password: letmein
+      status_code: 200
+      url: 'http://localhost:8081/nexus/service/rest/v1/script/updatePassword/run'
       user: admin
 
   - name: '[Jenkins] create volume paths'
