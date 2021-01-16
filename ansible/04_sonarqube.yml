@@ -1,3 +1,4 @@
+---
 - name: "[SonarQube] create volume paths"
   file:
     group: "{{ username }}"
@@ -8,6 +9,7 @@
     - "{{ storage }}/sonarqube/data"
     - "{{ storage }}/sonarqube/logs"
     - "{{ storage }}/sonarqube/extensions"
+
 - name: "[SonarQube] set kernel parameters"
   sysctl:
     name: "{{ item.name }}"
@@ -17,6 +19,7 @@
   loop:
     - { name: vm.max_map_count, value: 262144 }
     - { name: fs.file-max, value: 65536 }
+
 - name: "[SonarQube] start container"
   docker_container:
     env:
@@ -36,10 +39,12 @@
       - "{{ storage }}/sonarqube/data:/opt/sonarqube/data"
       - "{{ storage }}/sonarqube/logs:/opt/sonarqube/logs"
       - "{{ storage }}/sonarqube/extensions:/opt/sonarqube/extensions"
+
 - name: "[SonarQube] wait for service to become available"
   wait_for:
     port: 9000
     delay: 120
+
 - name: "[SonarQube] update admin password"
   uri:
     body: "login=admin&password=letmein&previousPassword=admin"
@@ -49,6 +54,7 @@
     password: admin
     url: "http://localhost:9000/sonarqube/api/users/change_password"
     user: admin
+
 - name: "[SonarQube] create Jenkins WebHook"
   uri:
     body: "name=Jenkins&url=http://{{ server }}/jenkins"
@@ -58,6 +64,7 @@
     status_code: 200
     url: "http://localhost:9000/sonarqube/api/webhooks/create"
     user: admin
+
 - name: "[SonarQube] create default Access Token"
   uri:
     body: "name=default"

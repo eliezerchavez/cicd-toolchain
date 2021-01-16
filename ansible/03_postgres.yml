@@ -1,9 +1,11 @@
+---
 - name: "[PostgreSQL] create volume paths"
   file:
     group: "{{ username }}"
     owner: "{{ username }}"
     path: "{{ storage }}/postgres/data"
     state: directory
+
 - name: "[PostgreSQL] start container"
   docker_container:
     env:

@@ -1,3 +1,4 @@
+---
 - name: "[NGINX] start container"
   docker_container:
     image: nginx:stable

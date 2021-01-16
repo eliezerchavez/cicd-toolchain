@@ -7,7 +7,7 @@ credentials:
               description: "Sonarqube Default Token"
               id: "sonarqube"
               scope: GLOBAL
-              secret: "{SONARQUBE_TOKEN}"
+              secret: "{{ sonarqube.json.token }}"
           - usernamePassword:
               description: "Nexus Repository Manager OSS Credentials"
               id: "nexus"
@@ -77,7 +77,23 @@ security:
       - global:
           strategy: "triggeringUsersAuthorizationStrategy"
 unclassified:
+  globalNexusConfiguration:
+    nxrmConfigs:
+      - nxrm3Configuration:
+          credentialsId: "nexus"
+          displayName: "Nexus 3 Repository Manager OSS"
+          id: "default"
+          serverUrl: "http://{{ server }}/nexus"
   location:
-    url: "http://localhost/jenkins"
+    url: "http://{{ server }}/jenkins"
   shell:
     shell: "/bin/bash"
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: false
+    installations:
+    - credentialsId: "sonarqube"
+      name: "default"
+      serverUrl: "http://{{ server }}/sonarqube"
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
