@@ -12,6 +12,6 @@
     - import_tasks: ansible/07_nginx.yml
   vars:
     home: "/home/{{ username }}/cicd-toolchain"
-    server: "toolchain.eastus.cloudapp.azure.com"
+    server: "localhost"
     storage: "{{ home }}/storage"
     username: "tools"

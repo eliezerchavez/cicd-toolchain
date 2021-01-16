@@ -55,16 +55,6 @@
     url: "http://localhost:9000/sonarqube/api/users/change_password"
     user: admin
 
-- name: "[SonarQube] create Jenkins WebHook"
-  uri:
-    body: "name=Jenkins&url=http://{{ server }}/jenkins"
-    force_basic_auth: true
-    method: POST
-    password: letmein
-    status_code: 200
-    url: "http://localhost:9000/sonarqube/api/webhooks/create"
-    user: admin
-
 - name: "[SonarQube] create default Access Token"
   uri:
     body: "name=default"

@@ -28,7 +28,11 @@ This tools fit into one or more activities, which supports specific DevOps initi
 
 Make sure you have sudo capabilities before run:
 ```bash
-toolchain.sh init
+ansible-playbook site.yml
+```
+by default the server used is ```localhost```, if you want to change it then run:
+```bash
+ansible-playbook site.yml --extra-vars "server=<FQDN>"
 ```
 
 After that you can access the tools via:
@@ -43,7 +47,7 @@ Nexus | http://localhost/nexus
 
 Make sure you have sudo capabilities before run:
 ```bash
-toolchain.sh clean
+clean.sh
 ```
 
 ## Azure Installation
@@ -56,7 +60,7 @@ If your machine doesn't have enough resources to run this demo environment, you 
   az group deployment create -g CICDToolchain -n CICDToolchain --template-file ./toolchain.json \
     --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)" domainNameLabel=<label>
   ```
-* PowerShell
+* [PowerShell](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-5.3.0)
   ```powershell
   New-AzResourceGroup -Name CICDToolchain
   New-AzResourceGroupDeployment -ResourceGroupName CICDToolchain `
@@ -69,6 +73,6 @@ After that you can access the tools via:
 
 Tool | URL
 ---- | ---
-Jenkins | http://\<label>.eastus.cloudapp.azure.com/jenkins
-SonarQube | http://\<label>.eastus.cloudapp.azure.com/sonarqube
-Nexus | http://\<label>.eastus.cloudapp.azure.com/nexus
+Jenkins | http://\<label>.\<region>.cloudapp.azure.com/jenkins<br />e.g. http://toolchain.westus.cloudapp.azure.com/jenkins
+SonarQube | http://\<label>.\<region>.cloudapp.azure.com/sonarqube<br />e.g. http://toolchain.westus.cloudapp.azure.com/sonarqube
+Nexus | http://\<label>.\<region>.cloudapp.azure.com/nexus<br />e.g. http://toolchain.westus.cloudapp.azure.com/nexus
