@@ -57,14 +57,14 @@ If your machine doesn't have enough resources to run this demo environment, you 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
   ```bash
   az group create -g CICDToolchain
-  az group deployment create -g CICDToolchain -n CICDToolchain --template-file ./toolchain.json \
+  az group deployment create -g CICDToolchain -n CICDToolchain --template-file azure/toolchain.json \
     --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)" domainNameLabel=<label>
   ```
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-5.3.0)
   ```powershell
   New-AzResourceGroup -Name CICDToolchain
   New-AzResourceGroupDeployment -ResourceGroupName CICDToolchain `
-    -TemplateFile toolchain.json `
+    -TemplateFile azure/toolchain.json `
     -domainNameLabel <label> `
     -adminPublicKey <pubkey>
   ```
