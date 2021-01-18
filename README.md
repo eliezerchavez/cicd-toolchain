@@ -43,6 +43,8 @@ Jenkins | http://localhost/jenkins
 SonarQube | http://localhost/sonarqube
 Nexus | http://localhost/nexus
 
+The default credentials for all the tools installed are: *admin/letmein*
+
 ### Uninstall ❌
 
 Make sure you have sudo capabilities before run:
@@ -76,3 +78,5 @@ Tool | URL
 Jenkins | http://\<label>.\<region>.cloudapp.azure.com/jenkins<br />e.g. http://toolchain.westus.cloudapp.azure.com/jenkins
 SonarQube | http://\<label>.\<region>.cloudapp.azure.com/sonarqube<br />e.g. http://toolchain.westus.cloudapp.azure.com/sonarqube
 Nexus | http://\<label>.\<region>.cloudapp.azure.com/nexus<br />e.g. http://toolchain.westus.cloudapp.azure.com/nexus
+
+The default credentials for all the tools installed are: *admin/letmein*
