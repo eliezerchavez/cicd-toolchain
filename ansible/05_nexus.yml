@@ -29,7 +29,7 @@
 
 - name: "[Nexus] update admin password"
   uri:
-    body: "letmein"
+    body: letmein
     force_basic_auth: true
     headers:
       accept: "application/json"
