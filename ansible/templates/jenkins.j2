@@ -5,30 +5,30 @@ credentials:
       - credentials:
           - string:
               description: "Sonarqube Default Token"
-              id: "sonarqube"
+              id: sonarqube
               scope: GLOBAL
               secret: "{{ sonarqube.json.token }}"
           - usernamePassword:
               description: "Nexus Repository Manager OSS Credentials"
-              id: "nexus"
-              password: "letmein"
+              id: nexus
+              password: letmein
               scope: GLOBAL
-              username: "admin"
+              username: admin
 jenkins:
   authorizationStrategy:
     roleBased:
       roles:
         global:
           - assignments:
-              - "admin"
+              - admin
             description: "Jenkins administrators"
-            name: "admin"
+            name: admin
             permissions:
               - "Overall/Administer"
           - assignments:
-              - "authenticated"
+              - authenticated
             description: "Read-only users"
-            name: "readonly"
+            name: readonly
             permissions:
               - "Overall/Read"
               - "Job/Read"
@@ -37,11 +37,11 @@ jenkins:
         dockerApi:
           dockerHost:
             uri: "unix:/var/run/docker.sock"
-        name: "docker"
+        name: docker
         templates:
           - connector:
               attach:
-                user: "root"
+                user: root
                 entryPointCmdString: |-
                   ^${JAVA_EXE}
                   ^${JVM_ARGS}
@@ -56,8 +56,8 @@ jenkins:
               volumes:
                 - "/var/run/docker.sock:/var/run/docker.sock"
             instanceCapStr: "10"
-            labelString: "docker-agent"
-            name: "agent"
+            labelString: docker-agent
+            name: agent
             remoteFs: "/home/jenkins/agent"
             retentionStrategy:
               idleMinutes: 2
@@ -68,21 +68,21 @@ jenkins:
       allowsSignup: false
       enableCaptcha: false
       users:
-        - id: "admin"
-          password: "letmein"
+        - id: admin
+          password: letmein
   systemMessage: "Jenkins configured using CasC."
 security:
   queueItemAuthenticator:
     authenticators:
       - global:
-          strategy: "triggeringUsersAuthorizationStrategy"
+          strategy: triggeringUsersAuthorizationStrategy
 unclassified:
   globalNexusConfiguration:
     nxrmConfigs:
       - nxrm3Configuration:
-          credentialsId: "nexus"
+          credentialsId: nexus
           displayName: "Nexus 3 Repository Manager OSS"
-          id: "default"
+          id: default
           serverUrl: "http://{{ server }}/nexus"
   location:
     url: "http://{{ server }}/jenkins"
@@ -91,8 +91,8 @@ unclassified:
   sonarGlobalConfiguration:
     buildWrapperEnabled: false
     installations:
-    - credentialsId: "sonarqube"
-      name: "default"
+    - credentialsId: sonarqube
+      name: default
       serverUrl: "http://{{ server }}/sonarqube"
       triggers:
         skipScmCause: false
