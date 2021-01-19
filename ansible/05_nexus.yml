@@ -25,7 +25,12 @@
 - name: "[Nexus] wait for service to become available"
   wait_for:
     port: 8081
-    delay: 60
+    delay: 90
+
+- name: "[Nexus] get initial admin password"
+  slurp:
+    src: "{{ storage }}/nexus/data/admin.password"
+  register: admin_password
 
 - name: "[Nexus] update admin password"
   uri:
@@ -35,7 +40,7 @@
       accept: "application/json"
       Content-Type: "text/plain"
     method: PUT
-    password: "{{ lookup('file', storage + '/nexus/data/admin.password') }}"
+    password: "{{ admin_password['content'] | b64decode }}"
     status_code: 204
     url: "http://localhost:8081/nexus/service/rest/v1/security/users/admin/change-password"
     user: admin
