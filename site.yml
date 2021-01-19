@@ -14,4 +14,5 @@
     home: "/home/{{ username }}/cicd-toolchain"
     server: localhost
     storage: "{{ home }}/storage"
+    timezone: "America/Lima"
     username: tools
