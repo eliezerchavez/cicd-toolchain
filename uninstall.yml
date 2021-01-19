@@ -1,0 +1,27 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+    - set_fact:
+        username: "{{ ansible_user }}"
+  vars:
+    server: "localhost"
+
+- become: true
+  hosts: "{{ server }}"
+  tasks:
+    - name: "[uninstall] remove containers"
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - jenkins
+        - nexus
+        - nginx
+        - postgres
+        - sonarqube
+    - name: "[uninstall] delete volume paths"
+      file:
+        path: "/home/{{ username }}/cicd-toolchain"
+        state: absent
+  vars:
+    server: "localhost"
