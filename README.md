@@ -84,10 +84,10 @@ If your machine doesn't have enough resources to run this demo environment, you 
 ### Install ✔️
 
 ```bash
-ansible-playbook -i <server_name>, -e *"\server=<server_name>,..."* -u <ssh_user> install.yml
+ansible-playbook -i <server_name>, -e *"server=<server_name>,..."* -u <ssh_user> install.yml
 ```
 ### Uninstall ❌
 
 ```bash
-ansible-playbook -i <server_name>, -e *"\server=<server_name>,..."* -u <ssh_user> uninstall.yml
+ansible-playbook -i <server_name>, -e *"server=<server_name>,..."* -u <ssh_user> uninstall.yml
 ```
