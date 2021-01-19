@@ -1,4 +1,8 @@
 ---
+- name: "[pre-requisites] set timezone"
+  timezone:
+    name: "{{ timezone }}"
+
 - name: "[pre-requisites] install"
   apt:
     pkg:
