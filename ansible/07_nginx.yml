@@ -1,4 +1,18 @@
 ---
+- name: "[NGINX] create volume paths"
+  file:
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    path: "{{ storage }}/nginx/conf"
+    state: directory
+
+- name: "[NGINX] generating configuration files"
+  template:
+    dest: "{{ storage }}/nginx/conf/default.conf"
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    src: "ansible/templates/nginx/default.j2"
+
 - name: "[NGINX] start container"
   docker_container:
     image: nginx:stable
