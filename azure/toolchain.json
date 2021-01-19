@@ -75,10 +75,6 @@
         "adminPublicKey": {
             "type": "string"
         },
-        "customData": {
-            "type": "string",
-            "defaultValue": "IyEvdXNyL2Jpbi9lbnYgYmFzaAphcHQtZ2V0IHVwZGF0ZSAmJiBhcHQtZ2V0IGluc3RhbGwgLXkgYW5zaWJsZQpzdSAtYyAiZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9lbGllemVyY2hhdmV6L2NpY2QtdG9vbGNoYWluIiAtIHRvb2xzCg=="
-        },
         "nicName": {
             "type": "string",
             "defaultValue": "NIC01"
@@ -209,7 +205,6 @@
                 "osProfile": {
                     "computerName": "[parameters('vmName')]",
                     "adminUsername": "[parameters('adminUsername')]",
-                    "customData": "[parameters('customData')]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,
                         "ssh": {
