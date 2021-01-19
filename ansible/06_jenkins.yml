@@ -3,32 +3,54 @@
   file:
     group: "{{ username }}"
     owner: "{{ username }}"
-    path: "{{ item }}"
+    path: "{{ storage }}/{{ item }}"
     state: directory
   loop:
-    - "{{ storage }}/jenkins/home"
-    - "{{ home }}/jenkins/conf"
+    - "jenkins/home"
+    - "jenkins/conf"
 
-- name: "[Jenkins] calculating buildargs for docker image"
+- name: "[Jenkins] calculating buildargs for docker image (gid)"
   shell: "id -g {{ username }}"
   register: GROUP_ID
-- shell: "id -u {{ username }}"
+- name: "[Jenkins] calculating buildargs for docker image (uid)"
+  shell: "id -u {{ username }}"
   register: USER__ID
+
+- name: "[Jenkins] copy configuration files"
+  copy:
+    dest: "{{ storage }}/jenkins/conf"
+    group: "{{ username }}"
+    mode: 0644
+    owner: "{{ username }}"
+    src: "jenkins/"
 
 - name: "[Jenkins] build docker image"
   docker_image:
-    buildargs:
-      gid: "{{ GROUP_ID.stdout }}"
-      uid: "{{ USER__ID.stdout }}"
+    build:
+      args:
+        gid: "{{ GROUP_ID.stdout }}"
+        uid: "{{ USER__ID.stdout }}"
+      path: "{{ storage }}/jenkins/conf"
+      pull: false
     name: "toolchain/jenkins"
-    path: "{{ home }}/jenkins"
+    source: build
 
-- name: "[Jenkins] updating CasC"
+- name: "[Jenkins] remove unnecesary files"
+  file:
+    path: "{{ storage }}/jenkins/conf"
+    state: "{{ item }}"
+  loop:
+    - absent
+    - directory
+
+- pause:
+
+- name: "[Jenkins] generating configuration files"
   template:
-    dest: "{{ home }}/jenkins/conf/jenkins.yml"
+    dest: "{{ storage }}/jenkins/conf/config.yml"
     group: "{{ username }}"
     owner: "{{ username }}"
-    src: "{{ home }}/ansible/templates/jenkins.j2"
+    src: "ansible/templates/jenkins/config.j2"
 
 - name: "[Jenkins] start container"
   docker_container:
@@ -44,7 +66,7 @@
     state: started
     volumes:
       - "{{ storage }}/jenkins/home:/var/jenkins_home"
-      - "{{ home }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "{{ storage }}/jenkins/conf/config.yml:/usr/share/jenkins/ref/casc_configs/config.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 - name: "[Jenkins] associate jenkins to docker group"
@@ -66,5 +88,5 @@
     state: started
     volumes:
       - "{{ storage }}/jenkins/home:/var/jenkins_home"
-      - "{{ home }}/jenkins/conf/jenkins.yml:/usr/share/jenkins/ref/casc_configs/jenkins.yml"
+      - "{{ storage }}/jenkins/conf/config.yml:/usr/share/jenkins/ref/casc_configs/config.yml"
       - "/var/run/docker.sock:/var/run/docker.sock"
