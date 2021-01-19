@@ -40,9 +40,9 @@ You can override the value of the following variables in the playbook:
 
 Variable Name | Default Value
 ---- | ---
-server | hostname
-timezone | America/Lima
-username | tools
+```server``` | ```hostname```
+```timezone``` | ```America/Lima```
+```username``` | ```tools```
 
 <br />After that you can access the tools via:
 
