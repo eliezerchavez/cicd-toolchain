@@ -29,6 +29,9 @@
     groups: docker
     name: "{{ username }}"
 
+- name: "[docker] reset ssh connection to allow user changes to affect 'current login user'"
+  meta: reset_connection
+
 - name: "[docker] create tools network"
   docker_network:
     name: tools
