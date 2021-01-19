@@ -3,12 +3,12 @@
   file:
     group: "{{ username }}"
     owner: "{{ username }}"
-    path: "{{ item }}"
+    path: "{{ storage }}/{{ item }}"
     state: directory
   loop:
-    - "{{ storage }}/sonarqube/data"
-    - "{{ storage }}/sonarqube/logs"
-    - "{{ storage }}/sonarqube/extensions"
+    - "sonarqube/data"
+    - "sonarqube/logs"
+    - "sonarqube/extensions"
 
 - name: "[SonarQube] set kernel parameters"
   sysctl:
