@@ -3,8 +3,18 @@
   file:
     group: "{{ username }}"
     owner: "{{ username }}"
-    path: "{{ storage }}/postgres/data"
+    path: "{{ storage }}/{{ item }}"
     state: directory
+  loop:
+    - "postgres/conf"
+    - "postgres/data"
+
+- name: "[PostgreSQL] generating configuration files"
+  template:
+    dest: "{{ storage }}/postgres/conf/postgres-initdb.sql"
+    group: "{{ username }}"
+    owner: "{{ username }}"
+    src: "ansible/templates/postgres/initdb.j2"
 
 - name: "[PostgreSQL] start container"
   docker_container:
