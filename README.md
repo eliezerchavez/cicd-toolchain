@@ -24,37 +24,47 @@ This tools fit into one or more activities, which supports specific DevOps initi
 
 * [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) <br />
   Ansible is an open-source software provisioning, configuration management, and application-deployment tool enabling infrastructure as code. It runs on many Unix-like systems, and can configure both Unix-like systems as well as Microsoft Windows.
+
+* A user with sudo capabilities.
 ### Install ✔️
 
-Make sure you have sudo capabilities before run:
 ```bash
-ansible-playbook site.yml
+ansible-playbook install.yml
 ```
-by default the server used is ```localhost```, if you want to change it then run:
+or
 ```bash
-ansible-playbook site.yml --extra-vars "server=<FQDN>"
+ansible-playbook install.yml -e *"\<variable_name>=\<variable_value>,..."*
 ```
 
-After that you can access the tools via:
+You can override the value of the following variables in the playbook:
+
+Variable Name | Default Value
+---- | ---
+server | hostname
+timezone | America/Lima
+username | tools
+
+<br />After that you can access the tools via:
 
 Tool | URL
 ---- | ---
-Jenkins | http://localhost/jenkins
-SonarQube | http://localhost/sonarqube
-Nexus | http://localhost/nexus
+Jenkins | http://\<server>/jenkins<br />e.g. http://localhost/jenkins
+SonarQube | http://\<server>/sonarqube<br />e.g. http://toolchain.westus.cloudapp.azure.com/sonarqube
+Nexus | http://\<server>/nexus<br />e.g. http://tools.local/nexus
 
-The default credentials for all the tools installed are: *admin/letmein*
+<br />The **default credentials** for all the tools installed are: *admin/letmein*
 
 ### Uninstall ❌
 
-Make sure you have sudo capabilities before run:
 ```bash
-clean.sh
+ansible-playbook uninstall.yml
 ```
 
 ## Azure Installation
 The following is *completely optional*!!!<br />
 If your machine doesn't have enough resources to run this demo environment, you could use the provided [ARM Template](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview) to provision the recommended environment.<br />
+
+### Resource Creation ✔️
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
   ```bash
@@ -71,12 +81,13 @@ If your machine doesn't have enough resources to run this demo environment, you 
     -adminPublicKey <pubkey>
   ```
 
-After that you can access the tools via:
+### Install ✔️
 
-Tool | URL
----- | ---
-Jenkins | http://\<label>.\<region>.cloudapp.azure.com/jenkins<br />e.g. http://toolchain.westus.cloudapp.azure.com/jenkins
-SonarQube | http://\<label>.\<region>.cloudapp.azure.com/sonarqube<br />e.g. http://toolchain.westus.cloudapp.azure.com/sonarqube
-Nexus | http://\<label>.\<region>.cloudapp.azure.com/nexus<br />e.g. http://toolchain.westus.cloudapp.azure.com/nexus
+```bash
+ansible-playbook -i <server_name>, -e *"\server=<server_name>,..."* -u <ssh_user> install.yml
+```
+### Uninstall ❌
 
-The default credentials for all the tools installed are: *admin/letmein*
+```bash
+ansible-playbook -i <server_name>, -e *"\server=<server_name>,..."* -u <ssh_user> uninstall.yml
+```
