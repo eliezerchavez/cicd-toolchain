@@ -43,8 +43,6 @@
     - absent
     - directory
 
-- pause:
-
 - name: "[Jenkins] generating configuration files"
   template:
     dest: "{{ storage }}/jenkins/conf/config.yml"
